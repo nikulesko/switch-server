@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"sync"
+
+	"github.com/stianeikeland/go-rpio"
 )
 
 const inputCount = 8
@@ -56,6 +58,29 @@ func (bs *ButtonState) Toggle(id int) ([]bool, error) {
 }
 
 func main() {
+	err := rpio.Open()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rpio.Close()
+
+	// Inint GPIO here for the rasberry
+	pin1_0 := rpio.Pin(3) // GPIO2
+	pin1_0.Output()
+	pin1_1 := rpio.Pin(5) // GPIO3
+	pin1_1.Output()
+
+	pin2_0 := rpio.Pin(7) // GPIO4
+	pin2_0.Output()
+	pin2_1 := rpio.Pin(11) // GPIO17
+	pin2_1.Output()
+
+	pin3_0 := rpio.Pin(13) // GPIO27
+	pin3_0.Output()
+	pin3_1 := rpio.Pin(15) // GPIO22
+	pin3_1.Output()
+
 	tmpl, err := template.ParseFiles("templates/index.html")
 	if err != nil {
 		log.Fatal(err)
@@ -95,6 +120,49 @@ func main() {
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
+		}
+
+		// "Clean" all the switches
+		pin1_0.Low()
+		pin1_1.Low()
+		pin2_0.Low()
+		pin2_1.Low()
+		pin3_0.Low()
+		pin3_1.Low()
+
+		switch req.ID {
+		case 0: //RF1
+			pin1_0.High()
+			pin2_0.High()
+			pin3_0.High()
+		case 1: //RF2
+			pin1_1.High()
+			pin2_0.High()
+			pin3_0.High()
+		case 2: //RF3
+			pin1_0.High()
+			pin2_1.High()
+			pin3_0.High()
+		case 3: //RF4
+			pin1_1.High()
+			pin2_1.High()
+			pin3_0.High()
+		case 4: //RF5
+			pin1_0.High()
+			pin2_0.High()
+			pin3_1.High()
+		case 5: //RF6
+			pin1_1.High()
+			pin2_0.High()
+			pin3_1.High()
+		case 6: //RF7
+			pin1_0.High()
+			pin2_1.High()
+			pin3_1.High()
+		case 7: //RF8
+			pin1_1.High()
+			pin2_1.High()
+			pin3_1.High()
 		}
 
 		w.Header().Set("Content-Type", "application/json")
