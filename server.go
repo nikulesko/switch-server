@@ -165,6 +165,17 @@ func main() {
 			pin3_1.High()
 		}
 
+		log.Println("ID toggled:", req.ID)
+
+		log.Printf("State pin1_0: %v", pin1_0.Read())
+		log.Printf("State pin1_1: %v", pin1_1.Read())
+		log.Printf("State pin2_0: %v", pin2_0.Read())
+		log.Printf("State pin2_1: %v", pin2_1.Read())
+		log.Printf("State pin3_0: %v", pin3_0.Read())
+		log.Printf("State pin3_1: %v", pin3_1.Read())
+
+		log.Println("-----------------------------------")
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(newState)
 	})
